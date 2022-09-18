@@ -1,6 +1,7 @@
 # Azure Communication UI Mobile Library integration with DeepAR
 
-Azure Communication [UI Mobile Library](https://docs.microsoft.com/en-us/azure/communication-services/concepts/ui-library/ui-library-overview) 
+Azure Communication [UI Mobile Library](https://docs.microsoft.com/en-us/azure/communication-services/concepts/ui-library/ui-library-overview)
+
 DeepAR [Deep AR](https://www.deepar.ai/) 
 
 ## Getting Started
