@@ -5,18 +5,22 @@ import android.hardware.camera2.CameraCharacteristics
 import android.os.Handler
 import android.os.Looper
 import android.util.Size
+import androidx.camera.camera2.internal.compat.workaround.TargetAspectRatio.RATIO_16_9
+import androidx.camera.camera2.internal.compat.workaround.TargetAspectRatio.RATIO_4_3
 import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888
+import androidx.camera.core.ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888
 import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.communication.ui.calling.deep.ar.MainActivity
-import com.communication.ui.calling.deep.ar.MainActivity.Companion.width
 import com.google.common.util.concurrent.ListenableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -30,7 +34,8 @@ class CameraHelper(var context: Context) {
     private lateinit var imageAnalysis: ImageAnalysis
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     var onImageReceived: ((image: ImageProxy, mirror: Boolean) -> Unit)? = null
-
+    private var preview: Preview? = null
+    private  lateinit var previewView: PreviewView
 
     fun startCamera() {
         lensFacing = CameraSelector.LENS_FACING_FRONT
@@ -44,6 +49,13 @@ class CameraHelper(var context: Context) {
     }
 
     private fun bindCameraUseCases() {
+
+        preview = Preview.Builder()
+            // We request aspect ratio but no resolution
+            .setTargetAspectRatio(RATIO_16_9)
+            // Set initial target rotation
+            .build()
+
         imageAnalysis = ImageAnalysis.Builder()
             .setTargetResolution(Size(MainActivity.width, MainActivity.height))
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
@@ -65,7 +77,7 @@ class CameraHelper(var context: Context) {
             it.getCameraCharacteristic(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL)
         }
 
-        val cameraSelector =
+        val cameraSelector2 =
             CameraSelector.Builder().addCameraFilter {
                 it.filter { camInfo ->
                     // cam2Infos[0] is either EXTERNAL or best built-in camera
@@ -74,14 +86,19 @@ class CameraHelper(var context: Context) {
                 }
             }.build()
 
+       val cameraSelector =
+            CameraSelector.Builder().requireLensFacing(lensFacing).build()
 
         try {
             cameraProvider.unbindAll()
             cameraProvider.bindToLifecycle(
                 customLifecycle,
                 cameraSelector,
+                preview,
                 imageAnalysis
             )
+            preview?.setSurfaceProvider(previewView.createSurfaceProvider())
+
         } catch (e: Exception) {
 
         }
@@ -108,6 +125,10 @@ class CameraHelper(var context: Context) {
             customLifecycle.destroy()
             started = false
         }
+    }
+
+    fun setPreview(previewView: PreviewView) {
+        this.previewView = previewView
     }
 }
 

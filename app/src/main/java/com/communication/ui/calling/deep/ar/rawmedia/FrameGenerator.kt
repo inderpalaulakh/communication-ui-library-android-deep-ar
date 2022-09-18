@@ -103,6 +103,7 @@ class FrameGenerator(val context: Context) :
         stopFrameIterator()
         videoFrameSender = event.videoFrameSender
         Handler(Looper.getMainLooper()).post {
+            c.setPreview(MainActivity.callComposite!!.previewView)
             c.startCamera()
         }
         startFrameIterator()
