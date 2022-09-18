@@ -15,6 +15,7 @@ import com.azure.android.communication.calling.VideoFormat;
 import com.azure.android.communication.calling.VideoFrameKind;
 import com.azure.android.communication.calling.VideoOptions;
 import com.azure.android.communication.calling.VirtualRawOutgoingVideoStream;
+import com.communication.ui.calling.deep.ar.MainActivity;
 
 import java.util.Collections;
 
@@ -75,13 +76,13 @@ public class RawOutgoingVideoStreamFeature {
     protected void createOutgoingVideoStreamOptions(FrameGenerator frameGenerator) {
 
         VideoFormat videoFormat = new VideoFormat();
-        videoFormat.setWidth(1280);
-        videoFormat.setHeight(720);
+        videoFormat.setWidth(MainActivity.Companion.getWidth());
+        videoFormat.setHeight(MainActivity.Companion.getHeight());
         videoFormat.setPixelFormat(PixelFormat.RGBA);
         videoFormat.setVideoFrameKind(VideoFrameKind.VIDEO_SOFTWARE);
         videoFormat.setFramesPerSecond(30);
         //videoFormat.setStride1(1280);
-        videoFormat.setStride1((1280) * 4);
+        videoFormat.setStride1((MainActivity.Companion.getWidth()) * 4);
 
         options = new RawOutgoingVideoStreamOptions();
         options.setVideoFormats(Collections.singletonList(videoFormat));

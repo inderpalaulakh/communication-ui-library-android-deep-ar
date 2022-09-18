@@ -23,7 +23,9 @@ import com.communication.ui.calling.deep.ar.BuildConfig
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        var deepARHelper: DeepARHelper? = null
+       // var deepARHelper: DeepARHelper? = null
+        val width = 1280
+        val height = 720
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,8 +53,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startCallComposite() {
-        deepARHelper = DeepARHelper(this)
-        deepARHelper?.startDeepAR()
+       // deepARHelper = DeepARHelper(this)
+      //  deepARHelper?.startDeepAR()
 
         val communicationTokenRefreshOptions =
             CommunicationTokenRefreshOptions({ fetchToken() }, true)

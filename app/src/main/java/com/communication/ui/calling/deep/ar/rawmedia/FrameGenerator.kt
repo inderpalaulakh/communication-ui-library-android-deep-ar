@@ -37,17 +37,32 @@ class FrameGenerator(val context: Context) :
     }
 
     private fun frameIterator() {
-        MainActivity.deepARHelper?.setFrameGenerator(this)
+        //MainActivity.deepARHelper?.setFrameGenerator(this)
 
         c.onImageReceived = { imageProxy, mirroring ->
+
             try {
 
-                Handler(Looper.getMainLooper()).post {
-                    MainActivity.deepARHelper?.processImage(imageProxy, mirroring)
+                val sender = videoFrameSender as SoftwareBasedVideoFrameSender?
+                val timeStamp = sender!!.timestampInTicks
+                val videoFormat = videoFrameSender!!.videoFormat
+                sender.sendFrame(imageProxy!!.planes[0].buffer, timeStamp).get()
+
+
+                try {
+                    Thread.sleep((1000.0f / videoFormat.framesPerSecond).toLong())
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
                 }
+
             } catch (ex: Exception) {
                 ex.message
             }
+
+
+                //Handler(Looper.getMainLooper()).post {
+                 //   MainActivity.deepARHelper?.processImage(imageProxy, mirroring)
+               // }
 
         }
     }

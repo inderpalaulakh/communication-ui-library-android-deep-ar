@@ -8,13 +8,15 @@ import android.util.Size
 import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888
+import androidx.camera.core.ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888
 import androidx.camera.core.ImageProxy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import com.communication.ui.calling.deep.ar.MainActivity
+import com.communication.ui.calling.deep.ar.MainActivity.Companion.width
 import com.google.common.util.concurrent.ListenableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -43,16 +45,16 @@ class CameraHelper(var context: Context) {
 
     private fun bindCameraUseCases() {
         imageAnalysis = ImageAnalysis.Builder()
-            .setTargetResolution(Size(400, 450))
+            .setTargetResolution(Size(MainActivity.width, MainActivity.height))
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-            .setOutputImageFormat(OUTPUT_IMAGE_FORMAT_YUV_420_888)
+            .setOutputImageFormat(OUTPUT_IMAGE_FORMAT_RGBA_8888)
             // .setOutputImageFormat(OUTPUT_IMAGE_FORMAT_RGBA_8888)
             //   .setOutputImageRotationEnabled(true)
             .build()
 
         imageAnalysis.setAnalyzer(cameraExecutor) { image ->
             onImageReceived?.invoke(image, lensFacing == CameraSelector.LENS_FACING_FRONT)
-            // image.close()
+            image.close()
         }
 
         val cam2Infos = cameraProvider.availableCameraInfos.map {
@@ -71,6 +73,7 @@ class CameraHelper(var context: Context) {
                     thisCamId == cam2Infos[0].cameraId
                 }
             }.build()
+
 
         try {
             cameraProvider.unbindAll()
