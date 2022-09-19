@@ -93,11 +93,11 @@ class CameraHelper(var context: Context) {
             cameraProvider.unbindAll()
             cameraProvider.bindToLifecycle(
                 customLifecycle,
-                cameraSelector,
+                cameraSelector2,
                 preview,
                 imageAnalysis
             )
-            preview?.setSurfaceProvider(previewView.createSurfaceProvider())
+            preview?.setSurfaceProvider(previewView.surfaceProvider)
 
         } catch (e: Exception) {
 
