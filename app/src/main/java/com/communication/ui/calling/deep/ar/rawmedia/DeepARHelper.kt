@@ -16,13 +16,13 @@ import java.nio.ByteOrder
 class DeepARHelper(context: Context) : AREventListener {
     private var deepAR: DeepAR = DeepAR(context)
     private var initialized: Boolean = false
-    private var frameGenerator: FrameGenerator? = null
     private var effects: ArrayList<String> = ArrayList()
 
     private var buffers: Array<ByteBuffer?>? = null
     private var currentBuffer = 0
     private val numberOfBuffers = 2
     private var currentEffect = 12
+    var onImageProcessed: ((image: Image) -> Unit)? = null
 
     init {
         deepAR.setLicenseKey(BuildConfig.DEEP_AR_KEY)
@@ -32,7 +32,6 @@ class DeepARHelper(context: Context) : AREventListener {
     }
 
     fun setFrameGenerator(genrator: FrameGenerator) {
-        frameGenerator = genrator
     }
 
 
@@ -129,7 +128,9 @@ class DeepARHelper(context: Context) : AREventListener {
 
     override fun frameAvailable(image: Image?) {
         try {
-            frameGenerator?.sendImage(image)
+            image?.let {
+                onImageProcessed?.invoke(image)
+            }
         } catch (e: Exception) {
         }
     }

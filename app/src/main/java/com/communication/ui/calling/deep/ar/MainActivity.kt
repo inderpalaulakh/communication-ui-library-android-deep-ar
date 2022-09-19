@@ -2,7 +2,12 @@ package com.communication.ui.calling.deep.ar
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.opengl.GLSurfaceView
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.view.SurfaceView
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -14,23 +19,29 @@ import com.azure.android.communication.ui.calling.CallCompositeBuilder
 import com.azure.android.communication.ui.calling.models.CallCompositeGroupCallLocator
 import com.azure.android.communication.ui.calling.models.CallCompositeJoinLocator
 import com.azure.android.communication.ui.calling.models.CallCompositeRemoteOptions
+import com.communication.ui.calling.deep.ar.rawmedia.CameraHelper
 import com.communication.ui.calling.deep.ar.rawmedia.DeepARHelper
 import com.communication.ui.calling.deep.ar.rawmedia.RawOutgoingVideoStreamFeature
 import java.util.*
-import com.communication.ui.calling.deep.ar.BuildConfig
 
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
+        const val TAG: String = "ACS_DEEPAR "
         var deepARHelper: DeepARHelper? = null
     }
+
+    private lateinit var glSurfaceView: GLSurfaceView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val startButton: Button = findViewById(R.id.startButton)
         startButton.setOnClickListener { l -> startCallComposite() }
+        glSurfaceView = findViewById(R.id.glsurfaceview) as GLSurfaceView
+        glSurfaceView.setRenderer( CubeRenderer(false));
     }
 
     override fun onStart() {
@@ -51,10 +62,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startCallComposite() {
+
+        val cameraHelper = CameraHelper(this)
+
         deepARHelper = DeepARHelper(this)
         deepARHelper?.startDeepAR()
 
-        val communicationTokenRefreshOptions =
+        deepARHelper?.onImageProcessed = { image ->
+            Log.d(TAG, image.timestamp.toString())
+
+        }
+
+        cameraHelper.onImageReceived = { image, mirroring ->
+            Handler(Looper.getMainLooper()).post {
+                deepARHelper?.processImage(image, mirroring )
+            }
+        }
+
+        cameraHelper.startCamera()
+
+        /*val communicationTokenRefreshOptions =
             CommunicationTokenRefreshOptions({ fetchToken() }, true)
         val communicationTokenCredential =
             CommunicationTokenCredential(communicationTokenRefreshOptions)
@@ -62,7 +89,9 @@ class MainActivity : AppCompatActivity() {
         val locator: CallCompositeJoinLocator =
             CallCompositeGroupCallLocator(UUID.fromString(BuildConfig.GROUP_CALL_ID))
         val remoteOptions =
-            CallCompositeRemoteOptions(locator, communicationTokenCredential, BuildConfig.DISPLAY_NAME)
+            CallCompositeRemoteOptions(locator,
+                communicationTokenCredential,
+                BuildConfig.DISPLAY_NAME)
 
         val callComposite: CallComposite = CallCompositeBuilder().build()
 
@@ -70,7 +99,7 @@ class MainActivity : AppCompatActivity() {
             RawOutgoingVideoStreamFeature().startVideo(this, callComposite.callObject)
         }
 
-        callComposite.launch(this, remoteOptions)
+        callComposite.launch(this, remoteOptions)*/
     }
 
     private fun fetchToken(): String? {
