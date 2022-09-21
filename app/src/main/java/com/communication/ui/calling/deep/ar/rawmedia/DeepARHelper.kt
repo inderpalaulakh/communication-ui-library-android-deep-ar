@@ -124,6 +124,14 @@ class DeepARHelper(context: Context) : AREventListener {
         initialized = true
     }
 
+    fun changeNextEffect() {
+        currentEffect++
+        if(currentEffect >= effects.size) {
+            currentEffect = 1
+        }
+        deepAR.switchEffect("effect", getFilterPath(effects[currentEffect]))
+    }
+
     override fun faceVisibilityChanged(p0: Boolean) {}
     override fun imageVisibilityChanged(p0: String?, p1: Boolean) {}
 
@@ -137,4 +145,5 @@ class DeepARHelper(context: Context) : AREventListener {
     override fun error(p0: ARErrorType?, p1: String?) {}
 
     override fun effectSwitched(p0: String?) {}
+
 }

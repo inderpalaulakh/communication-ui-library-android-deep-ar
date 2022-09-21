@@ -1,6 +1,8 @@
 package com.communication.ui.calling.deep.ar.rawmedia
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.media.Image
 import android.os.Handler
 import android.os.Looper
@@ -11,6 +13,7 @@ import com.azure.android.communication.calling.VideoFrameSenderChangedEvent
 import com.azure.android.communication.calling.VideoFrameSenderChangedListener
 import com.communication.ui.calling.deep.ar.MainActivity
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.util.*
 
 class FrameGenerator(val context: Context) :
@@ -97,12 +100,41 @@ class FrameGenerator(val context: Context) :
 
         try {
 
+            val bitmap =
+                Bitmap.createBitmap(image!!.width, image.height, Bitmap.Config.ARGB_8888).apply {
+                    setHasAlpha(false)
+                    copyPixelsFromBuffer(image.planes[0].buffer.apply {
+                        order(ByteOrder.nativeOrder())
+                        rewind()
+                    })
+                }
+
+            Handler(Looper.getMainLooper()).post {
+                // below code is POC code
+                // In production probably Texture View should be used
+                val surfaceView = MainActivity.callComposite.pipSurfaceView
+                val canvas: Canvas = surfaceView.holder.lockCanvas()
+
+
+                try {
+                    val b = BitmapHelper.resizeBitmap(
+                        bitmap!!,
+                        surfaceView.width,
+                        surfaceView.height)
+
+                    canvas.drawBitmap(b,
+                        0.0f, 0.0f, null
+                    )
+                } finally {
+                    surfaceView.holder.unlockCanvasAndPost(canvas)
+                }
+            }
+
             val sender = videoFrameSender as SoftwareBasedVideoFrameSender?
             val timeStamp = sender!!.timestampInTicks
             val videoFormat = videoFrameSender!!.videoFormat
             byteBuffer?.position(0)
             sender.sendFrame(image!!.planes[0].buffer, timeStamp).get()
-
 
             try {
                 Thread.sleep((1000.0f / videoFormat.framesPerSecond).toLong())
@@ -110,10 +142,10 @@ class FrameGenerator(val context: Context) :
                 e.printStackTrace()
             }
 
+
         } catch (ex: Exception) {
             ex.message
         }
-
     }
 
     /**

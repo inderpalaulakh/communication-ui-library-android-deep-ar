@@ -7,6 +7,7 @@ DeepAR [Deep AR](https://www.deepar.ai/)
 ## Getting Started
 
 - Clone UI Library branch [inderpalaulakh/communication-ui-library-android/tree/feature/raw_media](https://github.com/inderpalaulakh/communication-ui-library-android/tree/feature/raw_media) and generate .aar by executing `./gradlew build`
+- Copy generate `calling-release.aar` to `communication-ui-library-android-deep-ar/lib`. 
 - Register at [Deep AR](https://www.deepar.ai/). Generate Android project with application id `com.communication.ui.calling.deep.ar`.
 - Follow [Android Azure Communication UI Library](https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/ui-library/get-started-composites?tabs=kotlin&pivots=platform-android) to generate `ACS Token`, `Group Call ID`.
 - In `communication-ui-library-android/azure-communication-ui/local.properties/local.properties` paste below key's
