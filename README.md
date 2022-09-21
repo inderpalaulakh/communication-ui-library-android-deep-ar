@@ -22,5 +22,12 @@ DEEP_AR_KEY=""
 ## Build Application
 - Build App
 - Press Launch button
+- Enable `appear on top`
+  ![Hero Image](images/enableontop.png)
+- Accept camera permissions
+- Press `Launch` button
+- Press `Join Call` button
 - Join call with remote participant
+- Press `Start` button for raw media controls
 - On remote participant join, video from your device will start. Remote participant will see stream with DeepAR effects.
+  ![Hero Image](images/enableontop.png)
