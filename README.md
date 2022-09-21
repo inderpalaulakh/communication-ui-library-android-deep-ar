@@ -34,3 +34,5 @@ DEEP_AR_KEY=""
 - On remote participant join, video from your device will start. Remote participant will see stream with DeepAR effects.
 
 ![Hero Image](images/workingrawmedia.png)
+
+* Code changes to ACS Ui library and sample application in this repo is POC(Proff of concept) code. Code cleanup is required for production code.
