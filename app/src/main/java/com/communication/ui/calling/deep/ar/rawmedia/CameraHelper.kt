@@ -4,8 +4,10 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Size
+import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888
 import androidx.camera.core.ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888
 import androidx.camera.core.ImageProxy
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -41,16 +43,17 @@ class CameraHelper(var context: Context) {
 
     private fun bindCameraUseCases() {
         imageAnalysis = ImageAnalysis.Builder()
-            .setTargetResolution(Size(400, 450))
+            .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+            //.setTargetResolution(Size(400, 450))
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-            .setOutputImageFormat(OUTPUT_IMAGE_FORMAT_YUV_420_888)
-            // .setOutputImageFormat(OUTPUT_IMAGE_FORMAT_RGBA_8888)
+            //.setOutputImageFormat(OUTPUT_IMAGE_FORMAT_YUV_420_888)
+            .setOutputImageFormat(OUTPUT_IMAGE_FORMAT_RGBA_8888)
             //   .setOutputImageRotationEnabled(true)
             .build()
 
         imageAnalysis.setAnalyzer(cameraExecutor) { image ->
             onImageReceived?.invoke(image, lensFacing == CameraSelector.LENS_FACING_FRONT)
-            // image.close()
+            //image .close()
         }
 
         val cameraSelector =

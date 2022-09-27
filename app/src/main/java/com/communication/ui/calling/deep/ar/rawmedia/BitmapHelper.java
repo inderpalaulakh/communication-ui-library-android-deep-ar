@@ -5,6 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 public class BitmapHelper {
+
+
+
     public static Bitmap resizeBitmap(Bitmap bitmap, int reqWidth, int reqHeight) {
         RequestSizeOptions options = RequestSizeOptions.RESIZE_FIT;
         try {
